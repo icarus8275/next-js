@@ -1,0 +1,50 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+### ShadCN Components
+- 모든 UI 컴포넌트는 shadcn/ui를 사용한다.
+- 설치 커맨드: npx shadcn@latest add <component-name>
+    - npx shadcn-ui@latest add는 deprecated → 사용 금지.
+- 생성 위치는 기본값(components.json)을 src/components/ui 로 유지.
+
+### Icons
+- 아이콘은 Lucide React만 사용한다.
+- 임포트: import { Search, Menu } from "lucide-react"
+
+### Component Structure
+- 공통 규칙: 항상 src/ 아래에 배치하고, 임포트는 @/* 별칭을 사용한다.
+
+src/
+  app/                     # 라우트(페이지) 계층
+  components/              # 앱 전역 재사용 컴포넌트
+    ui/                    # shadcn 생성 컴포넌트(자동 생성 위치)
+    layout/                # 헤더/사이드바/푸터 등
+    shared/                # 버튼 조합, 카드 조합 등 UI 묶음
+  lib/                     # 유틸, fetcher, prisma, helpers
+  hooks/                   # 클라이언트 훅
+  types/                   # 전역 타입
+
+- UI 컴포넌트: src/components/ui/*
+(shadcn로 생성되는 파일. 수정은 가능하지만 폴더는 옮기지 않기)
+- 전역 재사용 컴포넌트: src/components/*(예: layout/, shared/)
+- 페이지 전용(콜로케이션): 해당 라우트 폴더 하위에 둔다.
+    - 예: src/app/dashboard/_components/UsersTable.tsx
+    - 규칙: 라우트 전용 컴포넌트는 _components 폴더로 모아 관리
+- 임포트 예시
+import { Button } from "@/components/ui/button";
+import Sidebar from "@/components/layout/sidebar";
+import UsersTable from "@/app/dashboard/_components/UsersTable";
+
+### Best Practices
+- TypeScript 필수: Props/리턴 타입 명시. 공용 타입은 src/types에 분리.
+- Server/Client 경계:
+    - 가능한 한 Server Component 우선 사용.
+    - shadcn 컴포넌트는 클라이언트 의존이 있는 경우가 많으므로 필요한 파일 최상단에 "use client"; 명시.
+- 재사용성: 페이지 전용 로직/스타일이 섞인 컴포넌트는 _components로, 범용화되면 src/components로 승격.
+- 이름 규칙: 파일/컴포넌트 PascalCase, 폴더는 kebab-case 또는 snake_case 중 하나로 통일.
+- 배럴(선택): src/components/index.ts에 자주 쓰는 전역 컴포넌트 export.
+- 스타일: Tailwind 우선. 커스텀 스타일은 필요한 경우에만 class-variance-authority(cva) 활용.
+- 테스트(선택): 컴포넌트 옆에 *.test.tsx 두거나 src/__tests__/components에 모아두기.
